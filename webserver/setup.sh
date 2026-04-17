@@ -104,6 +104,7 @@ HTML = """<!DOCTYPE html>
       <tr><td>Internal IP</td><td>{internal_ip}</td></tr>
       <tr><td>External IP</td><td>{external_ip}</td></tr>
       <tr><td>Date / Time</td><td>{now}</td></tr>
+      <tr><td>Client IP</td><td>{client_ip}</td></tr>
     </table>
     <h2>Request Headers</h2>
     <table>
@@ -125,6 +126,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             internal_ip=get_internal_ip(),
             external_ip=get_external_ip(),
             now=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            client_ip=self.client_address[0],
             header_rows=header_rows,
         ).encode()
         self.send_response(200)

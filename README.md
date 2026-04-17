@@ -4,25 +4,25 @@ Utility scripts for Azure VM demo and testing purposes. Clone the repo on a VM a
 
 ## One-shot execution from GitHub
 
-No clone needed — pipe the raw script straight into bash:
+No clone needed — pipe the raw script straight into bash.
+
+> **Use `refs/heads/main` instead of `main` in the URL.** GitHub's CDN caches the short-ref URL aggressively, so `/main/` may serve a stale version. The full ref path `/refs/heads/main/` bypasses that cache and always returns the latest commit.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/webserver/setup.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/ddewaele/AzureScripts/refs/heads/main/webserver/setup.sh | sudo bash
 ```
 
-> Make sure port 80 is open in your Azure Network Security Group before running.
-
-To use a custom port (e.g. 8080):
+To pass arguments (e.g. a custom port):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/webserver/setup.sh | sudo bash -s -- 8080
+curl -fsSL https://raw.githubusercontent.com/ddewaele/AzureScripts/refs/heads/main/webserver/setup.sh | sudo bash -s -- 8080
 ```
 
 ## Scripts
 
 ### `webserver/setup.sh` — Simple HTTP info page
 
-Sets up a lightweight web server that displays the VM's hostname, internal IP, external IP, and current datetime. Persists across reboots via systemd.
+Sets up a lightweight web server that displays the VM's hostname, internal IP, external IP, current datetime, and incoming request headers. Persists across reboots via systemd.
 
 **Requirements:** Python 3 (pre-installed on most Azure VM images), root access.
 
@@ -32,6 +32,14 @@ Sets up a lightweight web server that displays the VM's hostname, internal IP, e
 sudo bash webserver/setup.sh          # port 80
 sudo bash webserver/setup.sh 8080     # custom port
 ```
+
+One-shot from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ddewaele/AzureScripts/refs/heads/main/webserver/setup.sh | sudo bash
+```
+
+The script is idempotent — re-running it updates the server and restarts the service.
 
 **Manage the service:**
 
@@ -47,10 +55,10 @@ sudo systemctl start azure-demo-server
 sudo bash webserver/teardown.sh
 ```
 
-Or in one shot from GitHub:
+Or from GitHub:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/webserver/teardown.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/ddewaele/AzureScripts/refs/heads/main/webserver/teardown.sh | sudo bash
 ```
 
 The teardown script stops the service, disables it, removes the systemd unit file, and deletes `/opt/azure-demo-server`.
@@ -79,10 +87,10 @@ LOCATION=northeurope bash demo-vm/setup.sh   # custom location
 ADMIN_USER=myuser bash demo-vm/setup.sh      # custom admin username
 ```
 
-Or in one shot from GitHub:
+Or from GitHub:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/demo-vm/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ddewaele/AzureScripts/refs/heads/main/demo-vm/setup.sh | bash
 ```
 
 SSH keys are generated automatically (`~/.ssh/id_rsa`) if none exist. The VM has no public IP — access it via Azure Bastion or a jump box on the same VNet.
@@ -96,5 +104,5 @@ bash demo-vm/teardown.sh
 Or from GitHub:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/demo-vm/teardown.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ddewaele/AzureScripts/refs/heads/main/demo-vm/teardown.sh | bash
 ```
