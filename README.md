@@ -38,13 +38,19 @@ sudo bash webserver/setup.sh 8080     # custom port
 ```bash
 sudo systemctl status azure-demo-server
 sudo systemctl stop azure-demo-server
-sudo systemctl disable azure-demo-server
+sudo systemctl start azure-demo-server
 ```
 
 **Uninstall:**
 
 ```bash
-sudo systemctl disable --now azure-demo-server
-sudo rm /etc/systemd/system/azure-demo-server.service
-sudo rm -rf /opt/azure-demo-server
+sudo bash webserver/teardown.sh
 ```
+
+Or in one shot from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/webserver/teardown.sh | sudo bash
+```
+
+The teardown script stops the service, disables it, removes the systemd unit file, and deletes `/opt/azure-demo-server`.
