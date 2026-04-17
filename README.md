@@ -54,3 +54,47 @@ curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/w
 ```
 
 The teardown script stops the service, disables it, removes the systemd unit file, and deletes `/opt/azure-demo-server`.
+
+---
+
+### `demo-vm/setup.sh` — Private VM with VNet
+
+Creates a full demo environment from scratch:
+
+| Resource | Value |
+|---|---|
+| Resource group | `my-rg` |
+| VNet | `my-vnet` — `10.4.0.0/16` |
+| Subnet1 | `my-subnet1` — `10.4.1.0/24` |
+| Subnet2 | `my-subnet2` — `10.4.2.0/24` |
+| VM | `my-vm` — Standard_B1s, Ubuntu 22.04 LTS Gen2, private only |
+
+**Requirements:** [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed and logged in (`az login`).
+
+**Run:**
+
+```bash
+bash demo-vm/setup.sh                        # deploys to westeurope
+LOCATION=northeurope bash demo-vm/setup.sh   # custom location
+ADMIN_USER=myuser bash demo-vm/setup.sh      # custom admin username
+```
+
+Or in one shot from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/demo-vm/setup.sh | bash
+```
+
+SSH keys are generated automatically (`~/.ssh/id_rsa`) if none exist. The VM has no public IP — access it via Azure Bastion or a jump box on the same VNet.
+
+**Teardown** (deletes the entire resource group and everything in it):
+
+```bash
+bash demo-vm/teardown.sh
+```
+
+Or from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/<your-username>/AzureScripts/main/demo-vm/teardown.sh | bash
+```

@@ -77,6 +77,7 @@ HTML = """<!DOCTYPE html>
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      padding: 40px 0;
     }}
     .card {{
       background: #161b22;
@@ -84,13 +85,15 @@ HTML = """<!DOCTYPE html>
       border-radius: 10px;
       padding: 40px 56px;
       min-width: 400px;
+      width: 640px;
     }}
     h1 {{ color: #58a6ff; font-size: 1.4rem; margin-bottom: 28px; letter-spacing: 1px; }}
+    h2 {{ color: #58a6ff; font-size: 0.95rem; margin: 32px 0 16px; letter-spacing: 1px; text-transform: uppercase; }}
     table {{ width: 100%; border-collapse: collapse; }}
     tr:not(:last-child) td {{ border-bottom: 1px solid #21262d; }}
-    td {{ padding: 12px 0; vertical-align: middle; }}
-    td:first-child {{ color: #8b949e; font-size: 0.85rem; width: 120px; }}
-    td:last-child {{ color: #e6edf3; font-weight: 500; padding-left: 16px; }}
+    td {{ padding: 10px 0; vertical-align: top; }}
+    td:first-child {{ color: #8b949e; font-size: 0.85rem; width: 180px; white-space: nowrap; }}
+    td:last-child {{ color: #e6edf3; font-weight: 500; padding-left: 16px; word-break: break-all; }}
   </style>
 </head>
 <body>
@@ -102,6 +105,10 @@ HTML = """<!DOCTYPE html>
       <tr><td>External IP</td><td>{external_ip}</td></tr>
       <tr><td>Date / Time</td><td>{now}</td></tr>
     </table>
+    <h2>Request Headers</h2>
+    <table>
+      {header_rows}
+    </table>
   </div>
 </body>
 </html>"""
@@ -109,11 +116,16 @@ HTML = """<!DOCTYPE html>
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
+        header_rows = "\n      ".join(
+            f"<tr><td>{k}</td><td>{v}</td></tr>"
+            for k, v in self.headers.items()
+        )
         body = HTML.format(
             hostname=socket.gethostname(),
             internal_ip=get_internal_ip(),
             external_ip=get_external_ip(),
             now=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            header_rows=header_rows,
         ).encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
